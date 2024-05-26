@@ -3,6 +3,9 @@
 
 # __generated__ by Terraform from "/hostedzone/Z10364473IE4KWDOY01TA"
 resource "aws_route53_zone" "rodrigorenteriacloud" {
+  lifecycle {
+    prevent_destroy = true
+  }
   comment           = "HostedZone created by Route53 Registrar"
   delegation_set_id = null
   force_destroy     = null

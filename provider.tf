@@ -1,10 +1,23 @@
 terraform {
+  backend "s3" {
+    bucket = "s3stateackendrrcloudresume"
+    dynamodb_table = "state-lock"
+    region = "us-east-1"
+    key = "global/mystatefile/terraform.tfstate"
+    encrypt = true
+  }
   required_providers {
     aws = {
         source = "hashicorp/aws"
     }
   }
 }
+
+# terraform {
+#   backend "local" {
+#     path = "./sample.tfstate"
+#   }
+# }
 
 provider "aws" {
   region= "us-east-1"
