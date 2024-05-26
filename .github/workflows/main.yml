@@ -1,29 +1,28 @@
-name: Upload S3 resume Website
-
+# Sample workflow to access AWS resources when workflow is tied to branch
+# The workflow Creates static website using aws s3
+name: AWS S3 workflow
 on:
-  push:
-    branches:
-    - main
-
+  push
+env:
+  BUCKET_NAME : "rodrigorenteria.cloud"
+  AWS_REGION : "us-east-1"
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
 jobs:
-  deploy:
+  S3PackageUpload:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      env:
-        AWS_DEFAULT_REGION:
-        AWS_REGION:
-        AWS_ACCESS_KEY_ID:
-        AWS_SECRET_ACCESS_KEY:
-        AWS_SESSION_TOKEN:
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-
-    - name: Deploy static site to S3 bucket
-      run: aws s3 sync ./resume-dir/ s3://s3stateackendrrcloudresume --delete
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::041777205994:role/githubactions
+          role-session-name: actionsession
+          aws-region: ${{ env.AWS_REGION }}
+      # Upload a file to AWS s3
+      - name:  Copy index.html to s3
+        run: |
+          aws s3 sync ./resume-dir s3://${{ env.BUCKET_NAME }}/ --delete
